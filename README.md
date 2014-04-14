@@ -3,7 +3,7 @@ oh-my-zsh-theme-sinon
 
 ## Screen shot
 
-![](https://raw.githubusercontent.com/k-kinzal/oh-my-zsh-theme-sinon/master/screenshot.png)
+![](https://raw.githubusercontent.com/k-kinzal/oh-my-zsh-sinon-theme/master/screenshot.png)
 
 ---
 
