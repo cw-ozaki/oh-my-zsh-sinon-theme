@@ -15,6 +15,11 @@ function git_prompt_info() {
 function get_pwd() {
   print -D $PWD
 }
+function get_kubernetes_prompt() {
+  local context=$(kubectl config current-context)
+  local ns=$(kubectl config view -o "jsonpath={.contexts[?(@.name==\"$context\")].context.namespace}")
+  print -D "$fg[cyan]($context/${ns:-kube-system})$reset_color"
+}
 
 function put_spacing() {
   local git=$(git_prompt_info)
@@ -25,7 +30,7 @@ function put_spacing() {
   fi
 
   local termwidth
-  (( termwidth = ${COLUMNS} - 3 - ${#HOST} - ${#$(get_pwd)} - ${bat} - ${git} ))
+    (( termwidth = ${COLUMNS} - ${#HOST} - ${#$(get_pwd)} - ${git} - ${#$(get_kubernetes_prompt)} + 13 ))
 
   local spacing=""
   for i in {1..$termwidth}; do
@@ -35,10 +40,15 @@ function put_spacing() {
 }
 
 function precmd() {
-  print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(git_prompt_info)'
+  if kubectl get all >/dev/null 2>&1; then
+    print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(get_kubernetes_prompt) $(git_prompt_info)'
+  else
+    print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(git_prompt_info)'
+  fi
 }
 
 PROMPT='%{$reset_color%}$ '
+#RPROMPT='$(get_kubernetes_context)'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="[git:"
 ZSH_THEME_GIT_PROMPT_SUFFIX="]$reset_color"
