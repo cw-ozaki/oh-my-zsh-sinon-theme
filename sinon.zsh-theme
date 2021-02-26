@@ -16,9 +16,9 @@ function get_pwd() {
   print -D $PWD
 }
 function get_kubernetes_prompt() {
-  local context=$(kubectl config current-context)
-  local ns=$(kubectl config view -o "jsonpath={.contexts[?(@.name==\"$context\")].context.namespace}")
-  print -D "$fg[cyan]($context/${ns:-kube-system})$reset_color"
+  local context=$(/usr/local/bin/kubectl config current-context)
+  local ns=$(/usr/local/bin/kubectl config view -o "jsonpath={.contexts[?(@.name==\"$context\")].context.namespace}")
+  print -D "$fg[cyan]($context/${ns:-default})$reset_color"
 }
 
 function put_spacing() {
@@ -40,11 +40,7 @@ function put_spacing() {
 }
 
 function precmd() {
-  if kubectl get all >/dev/null 2>&1; then
-    print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(get_kubernetes_prompt) $(git_prompt_info)'
-  else
-    print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(git_prompt_info)'
-  fi
+  print -rP '$fg[cyan]%m: $fg[yellow]$(get_pwd) $(get_kubernetes_prompt) $(git_prompt_info)'
 }
 
 PROMPT='%{$reset_color%}$ '
